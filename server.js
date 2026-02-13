@@ -52,11 +52,21 @@ async function getElectricianByTwilioNumber(toTwilioNumber) {
 }
 
 async function logMissedCall(fields) {
-  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) return;
+  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
+    console.log("Airtable not configured - skipping log");
+    return;
+  }
 
-  await airtable.post(airtableUrl(AIRTABLE_LOG_TABLE), {
-    records: [{ fields }],
-  });
+  try {
+    console.log("Logging to Airtable table:", AIRTABLE_LOG_TABLE);
+    const resp = await airtable.post(airtableUrl(AIRTABLE_LOG_TABLE), {
+      records: [{ fields }],
+    });
+    console.log("Airtable log created:", resp.data?.records?.[0]?.id);
+  } catch (err) {
+    console.error("Airtable write FAILED:", err?.response?.status, err?.response?.data || err.message);
+    throw err; // important while debugging
+  }
 }
 
 async function alreadyProcessed(messageSid) {
