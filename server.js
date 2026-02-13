@@ -160,22 +160,32 @@ function buildLogFields({
   replyReceived = true,
 }) {
   return {
-    "MessageSid": messageSid || "unknown",
     "Customer Number": fromCustomer,
-    "Twilio Number": toTwilioNumber,
     "Electrician": electricianRecordId ? [electricianRecordId] : [],
-    "Call Time": new Date().toISOString(),
+
+    // "Call Time": new Date().toISOString(),
+
+    "Alert Sent": !!alertSent,
     "Reply Received": !!replyReceived,
+
+    "Notes": notes || "",
+
+    // "Electrician Business Name": businessName || "",
+    
+    // "Electrician Twilio Number": toTwilioNumber,
+    
+    
+    
     "Customer Message": reply || "",
     "Urgency": urgency || "General",
     "Postcode": postcode || "Unknown",
-    "Alert Sent": !!alertSent,
+    
     "Alert Channel": alertChannel || "",
     "Customer Confirmation Sent": !!customerConfirmationSent,
-    "Notes": notes || "",
+    
     // Optional if you have these columns (otherwise remove them):
-    "Electrician Business Name": businessName || "",
-    "Electrician ID": electricianId || "",
+    
+    "MessageSid": messageSid || "unknown",
   };
 }
 
