@@ -77,6 +77,38 @@ async function alreadyProcessed(messageSid) {
   });
   return (resp.data?.records?.length || 0) > 0;
 }
+
+app.get("/debug/airtable-fields", async (req, res) => {
+  try {
+    const url = `https://api.airtable.com/v0/meta/bases/${AIRTABLE_BASE_ID}/tables`;
+    const meta = await airtable.get(url);
+
+    const table = meta.data.tables.find(
+      (t) => t.name === AIRTABLE_LOG_TABLE
+    );
+
+    if (!table) {
+      return res.status(404).json({
+        error: "Table not found in base meta",
+        lookingFor: AIRTABLE_LOG_TABLE,
+        availableTables: meta.data.tables.map((t) => t.name),
+      });
+    }
+
+    return res.json({
+      table: table.name,
+      fields: table.fields.map((f) => ({
+        name: f.name,
+        type: f.type,
+      })),
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: err?.response?.data || err.message,
+    });
+  }
+});
+
   
 // Twilio sends application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
